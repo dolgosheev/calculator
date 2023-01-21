@@ -81,7 +81,7 @@ spec:
         path: "/"
         backend:
           service:
-            name: calc
+            name: app-calc
             port: 
               name: ui
   ingressClassName: nginx
