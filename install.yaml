@@ -23,8 +23,8 @@ spec:
         image: v0lshebnick/ts_calc:0.0.1-amd64
         resources:
           limits:
-            memory: "32Mi"
-            cpu: "32m"
+            memory: "400Mi"
+            cpu: "64m"
         ports:
         - containerPort: 3000
 ---
@@ -34,11 +34,11 @@ metadata:
   name: app-calc
   namespace: app-calc
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: app-calc
   ports:
-  - port: 3100
+  - port: 3000
     name: ui
     targetPort: 3000
 ---
