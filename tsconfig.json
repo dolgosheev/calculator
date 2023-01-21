@@ -1,0 +1,20 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": false,
+    "removeComments": true,
+    "noEmitOnError": true,
+    "outDir": "./public"
+  },
+  "files":[
+    "./src/application.ts",
+    "./src/index.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
