@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  app-calc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-calc
+  namespace: app-calc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-calc
+  template:
+    metadata:
+      labels:
+        app: app-calc
+    spec:
+      containers:
+      - name: app-calc
+        image: v0lshebnick/ts_calc:0.0.1-amd64
+        resources:
+          limits:
+            memory: "32Mi"
+            cpu: "32m"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-calc
+  namespace: app-calc
+spec:
+  type: NodePort
+  selector:
+    app: app-calc
+  ports:
+  - port: 3100
+    name: ui
+    targetPort: 3000
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: "letsencrypt-prod"
+  namespace: app-calc
+spec:
+  acme:
+    email: alexanderdolgosheev@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: example-issuer-account-key
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calc-external-ingress
+  namespace: app-calc
+  labels:
+    name: calc-external-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - calc.paradox-server.ru
+    secretName: calc-paradox-server-tls
+  rules:
+  - host: calc.paradox-server.ru
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: calc
+            port: 
+              name: ui
+  ingressClassName: nginx
